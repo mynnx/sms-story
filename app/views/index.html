@@ -1,0 +1,86 @@
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF8">
+        <style>
+            .axis text {
+              font: 10px sans-serif;
+            }
+
+            .axis path,
+            .axis line {
+              fill: none;
+              stroke: #000;
+              shape-rendering: crispEdges;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="content"></div>
+        <script src="http://d3js.org/d3.v3.js"></script>
+        <script src="./data.js"></script>
+        <script type="text/javascript">
+            var width = 1440,
+                height = 800;
+
+            var data = [
+              [
+                  { "x": 0, "y":  91},
+                  { "x": 1, "y": 290}
+              ],
+              [
+                  { "x": 0, "y":  9},
+              ]
+            ];
+
+            stack = d3.layout.stack()
+                      .offset("wiggle")
+                      //.values(function(d) { return d.values })
+                   //   .x(function(d) {
+                   //       var dateParts = d.x.split(' ');
+                   //       return new Date(dateParts[0], dateParts[1]);
+                   //   })
+            stack(data);
+
+            var x = d3.time.scale()
+                .domain([new Date(2012, 0, 1), new Date(2012, 11, 31)])
+                .range([0, width]);
+
+            var y = d3.scale.linear()
+                .domain([0, d3.max(data, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); })])
+                .range([height, 0]);
+
+            var svg = d3.select('#content')
+                          .append('svg')
+                          .attr('width', width)
+                          .attr('height', height);
+
+            var area = d3.svg.area()
+                .x(function(d) { return x(d.x); })
+                .y0(function(d) { return y(d.y0); })
+                .y1(function(d) { return y(d.y0 + d.y); });
+
+            svg.selectAll("path")
+                 .data(data)
+               .enter().append("path")
+                 .attr("d", area)
+                 .style("fill", function() { return color(Math.random()); });
+
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom")
+                .ticks(d3.time.months)
+                .tickSize(16, 0)
+                .tickFormat(d3.time.format("%B"));
+
+            svg.append("g")
+                .attr("class", "x axis")
+                .call(xAxis)
+              .selectAll(".tick text")
+                .style("text-anchor", "start")
+                .attr("x", 6)
+                .attr("y", 6);
+
+       </script>
+    </body>
+</html>
