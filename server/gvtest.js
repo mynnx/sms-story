@@ -82,8 +82,15 @@ function processMessages(data) {
         fetchTopN(5, i, 2013, messages);
     }
 
+    // TODO: sort stack order by those who are there most continuously/often
     var values = [];
-    _.each(messages2, function(counts, number) {
+    console.dir(_.keys(messages2));
+    var sortedNumbers = _.keys(messages2).sort(function (number1, number2) {
+        return _.keys(messages2[number2]).length - _.keys(messages2[number1]).length;
+    });
+
+    _.each(sortedNumbers, function(number) {
+        var counts = messages2[number];
         var value = { 'number': number, 'values': [] };
         value.name = contactNameForNumber(number);
         _.each(_.range(2009, 2014), function(year) {
