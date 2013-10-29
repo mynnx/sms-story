@@ -6,7 +6,8 @@ var _ = require('underscore');
 
 var data = {},
     messages = {},
-    messages2 = {};
+    messages2 = {},
+    contacts = require('contacts');
 
 function processMessageForTopN(message) {
     var date = new Date(message.start_time);
@@ -54,6 +55,14 @@ function processMessageForStackedGraph(message) {
     messages2[message.phone_number][month] += 1;
 }
 
+function contactNameForNumber(number) {
+    if (number in contacts.contactPhones) {
+        if ('name' in contacts.contactPhones[number]) {
+            return contacts.contactPhones[number].name;
+        }
+    }
+}
+
 function processMessages(data) {
     var responseBucket = data.conversations_response.conversationgroup;
     _.each(responseBucket, function(group) {
@@ -76,10 +85,14 @@ function processMessages(data) {
     var values = [];
     _.each(messages2, function(counts, number) {
         var value = { 'number': number, 'values': [] };
-        _.each(counts, function(count, date) {
-            value.values.push({ 'x': date, 'y': count});
+        value.name = contactNameForNumber(number);
+        _.each(_.range(2009, 2014), function(year) {
+            _.each(_.range(12), function(month) {
+                var date = year + " " + month;
+                var count = (date in counts) ? counts[date] : 0;
+                value.values.push({ 'x': date, 'y': count});
+            });
         });
-
         values.push(value);
     });
     fs.writeFile('processedForStackedGraph.json', JSON.stringify(values, null, '\t'), null);
@@ -102,12 +115,15 @@ function getMessagesFromAPI(callback) {
 function getContactsFromAPI(callback) {
     var keys, gv, apiData;
 
-    keys = require('keys.js');
+    keys = require('./keys.json');
     gv = new voicejs.Client(keys);
 
-    gv.get('contacts', {start:1, limit: 50}, function(err, response, data) {
+    gv.contacts('get', function(err, response, data) {
+        apiData = JSON.stringify(data, null, '\t');
+        fs.writeFile('contacts.json', apiData, null);
     });
 }
 
 if (process.argv[2] === 'api') { getMessagesFromAPI(processMessages); }
 else if (process.argv[2] === 'cache') { processMessages(require('./data.json')); }
+else if (process.argv[2] === 'contacts') { getContactsFromAPI() }
