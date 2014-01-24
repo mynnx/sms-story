@@ -27,6 +27,7 @@ server.get('/api/sms', function (req, res){
     if (err) { res.send(500, err); }
 
     vizData = gv.processMessages(sms, contacts, 2009, 2014);
+    fs.writeFileSync('./data.json', JSON.stringify(vizData, undefined, 2));
     res.send(vizData);
   });
 });
