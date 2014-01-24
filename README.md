@@ -17,6 +17,12 @@ After cloning, put your Google Voice credentials in a JSON file called `keys.jso
  "password": "123password321"}
 ```
 
+Install dependencies (`npm install -g bower` if you haven't already installed bower):
+```
+npm install
+bower install
+```
+
 Run `node app/server.js` and visit [http://localhost:3000/index.html](http://localhost:3000/index.html).
 
 You may have to wait a minute or two if you have a lot of data.  The data is cached as long as the server is running, so reloading the page should be quick.  Color schemes are intentionally non-deterministic, so feel free to reload at will.
