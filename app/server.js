@@ -26,13 +26,18 @@ server.get('/api/sms', function (req, res){
   gv.getData(keys, function (err, sms, contacts) {
     if (err) { res.send(500, err); }
 
+    fs.writeFileSync('./contacts.json', JSON.stringify(contacts, undefined, 2));
+    fs.writeFileSync('./sms.json', JSON.stringify(sms, undefined, 2));
     vizData = gv.processMessages(sms, contacts, 2009, 2014);
-    fs.writeFileSync('./data.json', JSON.stringify(vizData, undefined, 2));
     res.send(vizData);
   });
 });
 
-if (process.argv[2] === 'cache') { processMessages(require('./data.json')); }
+if (process.argv[2] === 'cache') {
+    gv.processMessages(require('./sms.json'),
+                       require('./contacts.json'),
+                       2009, 2014);
+}
 
 server.listen(3000);
 console.log('Listening on port 3000');
