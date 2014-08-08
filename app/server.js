@@ -28,7 +28,7 @@ server.get('/api/sms', function (req, res){
 
     fs.writeFileSync('./contacts.json', JSON.stringify(contacts, undefined, 2));
     fs.writeFileSync('./sms.json', JSON.stringify(sms, undefined, 2));
-    vizData = gv.processMessages(sms, contacts, 2009, 2014);
+    vizData = gv.processMessages(sms, contacts, 2009, 2015);
     res.send(vizData);
   });
 });
@@ -36,7 +36,7 @@ server.get('/api/sms', function (req, res){
 if (process.argv[2] === 'cache') {
     gv.processMessages(require('./sms.json'),
                        require('./contacts.json'),
-                       2009, 2014);
+                       2009, 2015);
 }
 
 server.listen(3000);

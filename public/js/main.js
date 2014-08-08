@@ -30,7 +30,7 @@ require(['d3'], function(d3) {
   stack(data);
 
   var x = d3.time.scale()
-    .domain([new Date(2009, 0, 1), new Date(2013, 10, 31)])
+    .domain([new Date(2009, 0, 1), new Date(2014, 7, 31)])
     .range([0, width]);
 
   var y = d3.scale.linear()
